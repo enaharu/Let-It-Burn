@@ -1,0 +1,49 @@
+name: GitHub Copilot Task
+description: GitHub Copilot 向けタスク（1 issue = 1 PR）
+title: "[Next_Gen_AI'sPractice<name>] "
+labels: ["github-copilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > このリポジトリは GitHub Copilot を活用したモック制作・検証用です。
+        > 小さく変更し、ビルド可能な状態を維持してください。
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目的
+      description: どのような成果を求めますか？
+      placeholder: "例: React 初期画面をベースに 3 画面以内のモックを作成する。"
+    validations:
+      required: true
+
+  - type: textarea
+    id: ac
+    attributes:
+      label: 受け入れ条件
+      description: 満たすべき具体的な条件。
+      placeholder: |
+        - 最大 3 画面以内
+        - npm run build が通る
+        - README と作業報告が更新される
+    validations:
+      required: true
+
+  - type: textarea
+    id: oos
+    attributes:
+      label: スコープ外
+      description: 対象外とする内容を明示する。
+      placeholder: "例: バックエンドなし、認証なし、本番運用なし。"
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 補足
+      description: ヒント、制約、関連リンクなど。
+      placeholder: "任意"
+    validations:
+      required: false

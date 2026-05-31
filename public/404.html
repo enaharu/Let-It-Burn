@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <script>
+      (function () {
+        var segments = window.location.pathname.split("/").filter(Boolean);
+        var targetPath = segments.length > 0 ? "/" + segments[0] + "/" : "/";
+        window.location.replace(window.location.origin + targetPath);
+      })();
+    </script>
+  </body>
+</html>

@@ -103,11 +103,11 @@ CD:
 - [ .github/workflows/cd.yml ](.github/workflows/cd.yml)
 - main への push で GitHub Pages へ配備
 
-GitHub Pages の想定公開 URL:
+GitHub Pages の制作物 URL:
 
-- https://<your-account>.github.io/next-gen-ais-practice-name/
+- https://enaharu.github.io/next-gen-ais-practice-enaharu/
 
-README から制作物へ飛ぶリンクとして使う場合は、リポジトリ作成後にこの URL を確定値へ置き換えてください。
+/* README から制作物へ飛ぶリンクとして使う場合は、リポジトリ作成後にこの URL を確定値へ置き換えてください。→完了 */
 
 ## 提出物
 

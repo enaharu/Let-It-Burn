@@ -35,7 +35,7 @@ export default function FireCanvas({
   return (
     <video
       className={className}
-      src="/43509_1280x720.mp4"
+      src={`${import.meta.env.BASE_URL}43509_1280x720.mp4`}
       autoPlay
       loop
       muted

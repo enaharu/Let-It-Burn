@@ -1,86 +1,52 @@
-import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
+import type { BurnPhase } from "./BonfireStage";
 
-/**
- * FireCanvas コンポーネント
- * 
- * useFireParticles から受け取ったパーティクル配列を
- * Canvas上に描画します。
- * 
- * Props:
- *   - particles: 描画するパーティクル配列
- */
-type FireCanvasProps = {
-  particles: Array<{
-    x: number;
-    y: number;
-    life: number;
-    type: "spark" | "ash" | "smoke";
-    color: string;
-    size: number;
-  }>;
-};
+interface FireCanvasProps {
+  phase?: BurnPhase;
+  burnProgress?: number;
+  className?: string;
+  opacity?: number;
+}
 
-export function FireCanvas({ particles }: FireCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export default function FireCanvas({
+  phase = "idle",
+  burnProgress = 0,
+  className = "fire-canvas",
+  opacity,
+}: FireCanvasProps) {
+  const opacityByPhase: Record<BurnPhase, number> = {
+    idle: 0.35,
+    "phase1-drop": 0.75,
+    "phase2-char-edge": 0.82,
+    "phase3-hole-open": 0.88,
+    "phase4-text-burn": 0.95,
+    "phase5-ash": 0.86,
+    "phase6-gone": 0.7,
+  };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // キャンバスをウィンドウサイズに合わせる
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // 背景色を描画（夜のキャンプ場）
-    ctx.fillStyle = "#0f172a";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 各パーティクルを描画
-    particles.forEach((p) => {
-      ctx.save();
-
-      // 透明度を寿命に応じて変える（消えゆく演出）
-      ctx.globalAlpha = p.life;
-
-      // パーティクルの色を設定
-      ctx.fillStyle = p.color;
-
-      // 円形で描画
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
-    });
-  }, [particles]);
-
-  // ウィンドウリサイズに対応
-  useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const style: CSSProperties = {
+    opacity:
+      opacity ??
+      (phase === "phase6-gone"
+        ? Math.max(0.35, 0.7 - burnProgress * 0.3)
+        : opacityByPhase[phase]),
+  };
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        pointerEvents: "none", // Canvas自体はクリックを通す
-        zIndex: 1,
+    <video
+      className={className}
+      src={`${import.meta.env.BASE_URL}43509_1280x720.mp4`}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      onLoadedData={(event) => {
+        event.currentTarget.play().catch(() => {
+          // 自動再生制限時はユーザー操作後に再生される
+        });
       }}
+      style={style}
     />
   );
 }

@@ -1,9 +1,8 @@
 :root {
-  --bg-dark: #0f172a;
-  --text-light: #ffffff;
-  --paper-cream: #f8f5e9;
-  --fire-orange: #ff4500;
-  --fire-yellow: #ffcc00;
+  --paper-cream: #f6dfbe;
+  --text-amber: #f7e1c8;
+  --text-soft: #dac5af;
+  --line-amber: rgba(255, 209, 158, 0.4);
 }
 
 * {
@@ -12,30 +11,276 @@
   box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
+html,
+body,
 #root {
   width: 100%;
   height: 100%;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  h1 {
-    font-size: 32px !important;
+body {
+  overflow: hidden;
+}
+
+.app-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  color: var(--text-amber);
+  background: #000000;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+}
+
+.site-bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.site-bg-video {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: auto;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.forest-bg {
+  background: #000000;
+}
+
+.app-content {
+  position: relative;
+  z-index: 2;
+  width: min(1320px, 100%);
+  height: 100%;
+  margin: 0 auto;
+}
+
+.ritual-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(380px, 1.2fr) 1fr;
+  gap: 30px;
+  align-items: stretch;
+  padding: 26px 34px;
+}
+
+.panel-left,
+.panel-right {
+  display: flex;
+  align-items: center;
+}
+
+.panel-center {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+}
+
+.mood-input-container {
+  width: 100%;
+}
+
+.mood-input-inner {
+  width: 100%;
+  max-width: 430px;
+}
+
+.mood-input-title {
+  font-size: clamp(30px, 3.2vw, 44px);
+  color: #f8dfc1;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.mood-input-subtitle {
+  color: var(--text-soft);
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+
+.mood-input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mood-input-field {
+  position: relative;
+}
+
+.mood-textarea {
+  width: 100%;
+  min-height: 248px;
+  border-radius: 12px;
+  border: 1px solid var(--line-amber);
+  padding: 20px;
+  color: #f8e5cf;
+  background: linear-gradient(160deg, rgba(19, 24, 42, 0.78), rgba(14, 16, 26, 0.74));
+  line-height: 1.8;
+  resize: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.mood-textarea:focus {
+  outline: none;
+  border-color: rgba(250, 184, 122, 0.64);
+  box-shadow: 0 0 0 2px rgba(255, 180, 95, 0.16);
+}
+
+.char-count {
+  position: absolute;
+  right: 13px;
+  bottom: 10px;
+  font-size: 12px;
+  color: rgba(224, 198, 167, 0.78);
+}
+
+.mood-submit-button {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 23px;
+  color: #ffe8d0;
+  background: linear-gradient(90deg, rgba(246, 185, 127, 0.8), rgba(156, 71, 131, 0.72));
+  box-shadow: 0 10px 30px rgba(58, 23, 41, 0.45);
+  cursor: pointer;
+}
+
+.mood-submit-button:disabled {
+  opacity: 0.52;
+  cursor: default;
+}
+
+.mood-input-hint {
+  margin-top: 18px;
+  color: rgba(222, 193, 160, 0.82);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.bonfire-stage-container {
+  width: 100%;
+  height: 100%;
+}
+
+.bonfire-stage {
+  position: relative;
+  width: min(600px, 100%);
+  height: 100%;
+  min-height: 560px;
+}
+
+.fire-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.note-paper {
+  z-index: 20;
+}
+
+.ritual-paper {
+  position: relative;
+  padding: 26px 26px 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(58, 34, 16, 0.45);
+  background:
+    linear-gradient(180deg, rgba(255, 232, 196, 0.95), rgba(240, 196, 137, 0.9)),
+    repeating-linear-gradient(
+      0deg,
+      rgba(140, 93, 46, 0.04) 0,
+      rgba(140, 93, 46, 0.04) 2px,
+      rgba(255, 255, 255, 0) 2px,
+      rgba(255, 255, 255, 0) 7px
+    );
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+  overflow: hidden;
+}
+
+.paper-burn-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.paper-text {
+  position: relative;
+  z-index: 2;
+  color: #2f1f15;
+  line-height: 1.62;
+  font-size: 38px;
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.burn-text {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ash-layer {
+  z-index: 18;
+}
+
+.status-message-container {
+  width: 100%;
+}
+
+.status-reset-button:disabled {
+  pointer-events: none;
+}
+
+@media (max-width: 1080px) {
+  .ritual-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(340px, 1fr) auto;
+    padding: 20px;
+    gap: 12px;
   }
-  
-  textarea {
-    font-size: 12px !important;
-    height: 100px !important;
+
+  .panel-left,
+  .panel-right {
+    justify-content: center;
   }
-  
-  button {
-    font-size: 14px !important;
-    padding: 10px 16px !important;
+
+  .mood-input-inner {
+    max-width: 640px;
+  }
+
+  .mood-textarea {
+    min-height: 140px;
+  }
+
+  .bonfire-stage {
+    min-height: 380px;
+    max-width: 680px;
+  }
+
+  .paper-text {
+    font-size: 30px;
+  }
+
+  .status-title {
+    font-size: 40px !important;
   }
 }

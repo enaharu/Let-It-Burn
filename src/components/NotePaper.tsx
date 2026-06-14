@@ -14,7 +14,7 @@ const PAPER_BOTTOM = 400;
 const DROP_START_Y = -230;
 const DROP_END_Y = -60;
 const REST_Y = -56;
-const PAPER_OFFSET_X = 0;;
+const PAPER_OFFSET_X = 0;
 
 function seededNoise(seedBase: number, index: number) {
   const x = Math.sin((seedBase + 1) * (index + 17) * 12.9898) * 43758.5453;
@@ -65,6 +65,41 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
 
   const maskPath = `${boundaryPath} L ${PAPER_W} ${PAPER_H} L 0 ${PAPER_H} Z`;
 
+  const holeCount = 24;
+  const holes = Array.from({ length: holeCount }, (_, i) => {
+    const col = i % 6;
+    const row = Math.floor(i / 6);
+    const xNoise = seededNoise(seedBase + 101, i);
+    const yNoise = seededNoise(seedBase + 233, i);
+    const sizeNoise = seededNoise(seedBase + 367, i);
+    const openNoise = seededNoise(seedBase + 421, i);
+    const x01 = (col + 0.16 + xNoise * 0.68) / 6;
+    const y01 = (row + 0.14 + yNoise * 0.72) / 4;
+
+    return {
+      cx: PAPER_W * (0.08 + x01 * 0.84),
+      cy: PAPER_H * (0.1 + y01 * 0.84),
+      baseRadius: 2.4 + sizeNoise * 5.8,
+      openThreshold: 0.22 + y01 * 0.52 + openNoise * 0.09,
+    };
+  });
+
+  const heatRotateOffset =
+    phase === "phase3-hole-open" ||
+    phase === "phase4-text-burn" ||
+    phase === "phase5-ash" ||
+    phase === "phase6-gone"
+      ? Math.sin((burnProgress + seededNoise(seedBase, 97)) * 7.4) * 0.55
+      : 0;
+
+  const heatScaleOffset =
+    phase === "phase3-hole-open" ||
+    phase === "phase4-text-burn" ||
+    phase === "phase5-ash" ||
+    phase === "phase6-gone"
+      ? 1 + Math.sin((burnProgress + seededNoise(seedBase, 141)) * 6.8) * 0.008
+      : 1;
+
   const paperMotion = {
     y:
       phase === "phase1-drop"
@@ -77,7 +112,7 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
         ? -8 + burnProgress * 8
         : phase === "phase2-char-edge"
           ? 0.6
-          : 0,
+          : heatRotateOffset,
     opacity:
       phase === "phase5-ash"
         ? 1 - burnProgress * 0.85
@@ -86,10 +121,10 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
           : 1,
     scale:
       phase === "phase5-ash"
-        ? 1 - burnProgress * 0.28
+        ? (1 - burnProgress * 0.28) * heatScaleOffset
         : phase === "phase6-gone"
-          ? 0.7
-          : 1,
+          ? 0.7 * heatScaleOffset
+          : heatScaleOffset,
   };
 
   const holeOpacity =
@@ -122,24 +157,27 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
               {burnLevel > 0.02 && <path d={maskPath} fill="black" />}
               {burnLevel > 0.26 && (
                 <>
-                  <circle
-                    cx={PAPER_W * 0.28}
-                    cy={PAPER_H * 0.74 - burnLevel * 28}
-                    r={8 + burnLevel * 20}
-                    fill="black"
-                  />
-                  <circle
-                    cx={PAPER_W * 0.58}
-                    cy={PAPER_H * 0.66 - burnLevel * 18}
-                    r={6 + burnLevel * 16}
-                    fill="black"
-                  />
-                  <circle
-                    cx={PAPER_W * 0.79}
-                    cy={PAPER_H * 0.78 - burnLevel * 22}
-                    r={5 + burnLevel * 14}
-                    fill="black"
-                  />
+                  {holes.map((hole, i) => {
+                    const openLevel = Math.max(
+                      0,
+                      Math.min(1, (burnLevel - hole.openThreshold) / 0.45)
+                    );
+                    const radius = hole.baseRadius * openLevel * (0.8 + burnLevel * 0.9);
+
+                    if (radius < 0.2) {
+                      return null;
+                    }
+
+                    return (
+                      <circle
+                        key={`${safePaper.id}-hole-${i}`}
+                        cx={hole.cx}
+                        cy={hole.cy - burnLevel * 11}
+                        r={radius}
+                        fill="black"
+                      />
+                    );
+                  })}
                 </>
               )}
             </mask>
@@ -153,7 +191,34 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
             opacity={holeOpacity}
           />
           <path d={maskPath} fill="rgba(25,18,12,0.66)" opacity={burnLevel > 0.04 ? 1 : 0} />
-          <path d={maskPath} fill="none" stroke="rgba(255,160,95,0.8)" strokeWidth="2.1" />
+          <path
+            d={boundaryPath}
+            fill="none"
+            stroke="rgba(16,11,8,0.9)"
+            strokeWidth="5.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity={burnLevel > 0.04 ? 0.96 : 0}
+          />
+          <path
+            d={boundaryPath}
+            fill="none"
+            stroke="rgba(95,58,31,0.84)"
+            strokeWidth="3.9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity={burnLevel > 0.04 ? 0.92 : 0}
+          />
+          <path
+            d={boundaryPath}
+            fill="none"
+            stroke="rgba(255,170,96,0.82)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ filter: "drop-shadow(0 0 3px rgba(255,140,75,0.55))" }}
+            opacity={burnLevel > 0.04 ? 0.95 : 0}
+          />
         </svg>
 
         <p className="paper-text burn-text" aria-label="burning-text">
@@ -162,9 +227,13 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
               return <br key={`${safePaper.id}-br-${index}`} />;
             }
 
-            const threshold = index / Math.max(chars.length - 1, 1);
+            const threshold = seededNoise(seedBase + 500, index);
             const charFade = Math.max(0, Math.min(1, (textBurn - threshold + 0.14) * 5));
             const opacity = 1 - charFade;
+            const rotate = (seededNoise(seedBase + 730, index) - 0.5) * 7.5 * charFade;
+            const drift = charFade * (4.2 + seededNoise(seedBase + 907, index) * 4.8);
+            const blur = charFade * 1.2;
+            const glow = 0.18 + charFade * 0.62;
 
             return (
               <span
@@ -172,8 +241,12 @@ export default function NotePaper({ paper, phase, burnProgress }: NotePaperProps
                 style={{
                   opacity,
                   color: `rgba(44, 29, 18, ${opacity})`,
-                  filter: `blur(${charFade * 0.9}px)`,
-                  transform: `translateY(${charFade * 6}px)`,
+                  filter: `blur(${blur}px)`,
+                  textShadow: `
+                    0 0 ${2 + charFade * 10}px rgba(255,140,80,${glow}),
+                    0 0 ${6 + charFade * 16}px rgba(255,90,40,${glow * 0.6})
+                `,
+                  transform: `translateY(${drift}px) rotate(${rotate}deg)`,
                   display: "inline-block",
                   transition: "opacity 60ms linear, filter 60ms linear, transform 60ms linear",
                 }}

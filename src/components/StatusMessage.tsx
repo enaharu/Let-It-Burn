@@ -14,46 +14,41 @@ export default function StatusMessage({ visible, onReset, text }: StatusMessageP
   const normalizeText = text.trim();
 
   const getResponseMessage = () => {
-    if (!normalizeText) {
-      return {
-        summary: "今日のモヤモヤは、ここで静かにほどけました。",
-        detail: "言葉にするだけでも、気持ちは少し軽くなります。",
-      };
-    }
+
 
     if (/不安|怖い|心配/.test(normalizeText)) {
       return {
-        summary: "その不安は、もう炎の向こうへ流れました。",
-        detail: "深呼吸して、次の一歩だけを見ていきましょう。",
+        summary: "その不安は、\nもう炎の向こうへ流れました。",
+        detail: "深呼吸して、\n次の一歩だけを見ていきましょう。",
       };
     }
 
     if (/怒|理不尽|腹|むか/.test(normalizeText)) {
       return {
-        summary: "強い怒りは、ここで静かに手放せました。",
-        detail: "正しさを抱え続けなくても、大丈夫です。",
+        summary: "強い怒りは、\nここで静かに手放せました。",
+        detail: "正しさを抱え続けなくても、\n大丈夫です。",
       };
     }
 
     if (/失敗|ミス|だめ|悔しい/.test(normalizeText)) {
       return {
-        summary: "悔しさは、燃えて次の力に変わりました。",
-        detail: "今日はここで区切って、明日へ渡しましょう。",
+        summary: "悔しさは、\n燃えて次の力に変わりました。",
+        detail: "今日はここで区切って、\n明日へ渡しましょう。",
       };
     }
 
     if (/疲|しんど|つら|消えたい/.test(normalizeText)) {
       return {
-        summary: "疲れきった気持ちは、そっと休ませられました。",
-        detail: "今は、立ち上がるより整えることを優先しましょう。",
+        summary: "疲れきった気持ちは、\nそっと休ませられました。",
+        detail: "今は、立ち上がるより\n整えることを優先しましょう。",
       };
     }
 
     return {
-      summary: `${normalizeText} は、ここで静かに燃え尽きました。`,
-      detail: "言葉にできたものは、もう少しだけ軽くできます。",
-    };
-  };
+        summary: "今日のモヤモヤは、\nここで静かにほどけました。",
+        detail: "言葉にするだけでも、\n気持ちは少し軽くなります。",
+      };
+  }
 
   const response = getResponseMessage();
 
@@ -108,7 +103,7 @@ export default function StatusMessage({ visible, onReset, text }: StatusMessageP
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
           style={{
-            fontSize: "50px",
+            fontSize: "45px",
             fontWeight: "300",
             color: "#f7d9b6",
             marginBottom: "18px",
@@ -131,6 +126,7 @@ export default function StatusMessage({ visible, onReset, text }: StatusMessageP
             marginBottom: "16px",
             position: "relative",
             zIndex: 1,
+            whiteSpace: "pre-line",
           }}
         >
           {response.summary}
@@ -148,6 +144,7 @@ export default function StatusMessage({ visible, onReset, text }: StatusMessageP
             position: "relative",
             zIndex: 1,
             lineHeight: 1.8,
+            whiteSpace: "pre-line",
           }}
         >
           {response.detail}

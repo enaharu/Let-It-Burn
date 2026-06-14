@@ -64,6 +64,10 @@ export default function BonfireStage({
   }, [burnKey, isActive, paper]);
 
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+
     if (phase === "idle") {
       return;
     }
@@ -104,9 +108,9 @@ export default function BonfireStage({
       window.clearInterval(tickTimer);
       window.clearTimeout(nextTimer);
     };
-  }, [phase, onBurnComplete]);
+  }, [phase, isActive, onBurnComplete]);
 
-  const showAsh = phase === "phase5-ash" || phase === "phase6-gone";
+  const showAsh = isActive && (phase === "phase5-ash" || phase === "phase6-gone");
 
   return (
     <motion.div

@@ -1,11 +1,11 @@
 ﻿# Next_Gen_AI'sPractice_enaharu
 
-React + Vite の初期画面へリセット済みの、モック制作向けテンプレートです。現在の実装は 1 画面構成で、ローカル起動と GitHub Pages 配備の両方を前提に最小構成へ整理しています。
+仕事終わりの気持ち切り替えをテーマにした、React + Vite 製のフロントエンドアプリです。ローカル開発と GitHub Pages 配備の両方を前提に、最小限の構成で運用できるように整理しています。
 
 ## 現在の状態
 
-- React + Vite テンプレート
-- 画面数は 1 画面
+- React + Vite + TypeScript 構成
+- 入力・燃焼・完了の 3 フェーズ UI
 - CI はビルドと lint を実行
 - CD は GitHub Pages へ自動配備
 - 作業報告テンプレートは [docs/one-day-report.md](docs/one-day-report.md)
@@ -57,7 +57,6 @@ npm run preview
 
 補足:
 
-- 今回の初期状態では HashRouter は不要です
 - GitHub Pages 配備時は [.github/workflows/cd.yml](.github/workflows/cd.yml) がリポジトリ名に応じてベースパスを解決します
 
 ## GitHub リポジトリ作成と紐付けコマンド
@@ -107,8 +106,6 @@ CD:
 GitHub Pages の制作物 URL:
 
 - https://enaharu.github.io/Let-It-Burn/
-
-/* README から制作物へ飛ぶリンクとして使う場合は、リポジトリ作成後にこの URL を確定値へ置き換えてください。→完了 */
 
 ## 提出物
 

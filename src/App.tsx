@@ -1,18 +1,42 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import MoodInput from "./components/MoodInput";
 import BonfireStage from "./components/BonfireStage";
 import StatusMessage from "./components/StatusMessage";
 import FireCanvas from "./components/FireCanvas";
+import ExpBar from "./components/ExpBar";
+import AchievementToast from "./components/AchievementToast";
 import type { Paper } from "./types/paper";
+import type { AchievementDefinition } from "./types/progression";
+import { useProgression } from "./hooks/useProgression";
 
 type Phase = "input" | "burning" | "complete";
+const MOBILE_BREAKPOINT = 900;
 
 export default function App() {
   const [phase, setPhase] = useState<Phase>("input");
   const [paper, setPaper] = useState<Paper | null>(null);
   const [burnKey, setBurnKey] = useState(0);
   const [resetKey, setResetKey] = useState(0);
+  const achievementQueueRef = useRef<AchievementDefinition[]>([]);
+  const [activeAchievement, setActiveAchievement] =
+    useState<AchievementDefinition | null>(null);
+  const { player, onBurnCompleted } = useProgression();
+
+  const enqueueAchievements = (achievements: AchievementDefinition[]) => {
+    if (achievements.length === 0) {
+      return;
+    }
+
+    if (!activeAchievement) {
+      const [first, ...rest] = achievements;
+      setActiveAchievement(first ?? null);
+      achievementQueueRef.current.push(...rest);
+      return;
+    }
+
+    achievementQueueRef.current.push(...achievements);
+  };
 
   const handleSubmit = (text: string) => {
     setPaper({
@@ -25,6 +49,8 @@ export default function App() {
   };
 
   const handleBurnComplete = () => {
+    const completion = onBurnCompleted();
+    enqueueAchievements(completion.unlockedAchievements);
     setPhase("complete");
   };
 
@@ -34,11 +60,26 @@ export default function App() {
     setResetKey((prev) => prev + 1);
   };
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= MOBILE_BREAKPOINT);
+
+  useEffect(() => {
+    if (!activeAchievement) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const next = achievementQueueRef.current.shift() ?? null;
+      setActiveAchievement(next);
+    }, 3200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [activeAchievement]);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 900);
+      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
     };
 
     window.addEventListener("resize", handleResize);
@@ -51,6 +92,12 @@ export default function App() {
   if (isMobile) {
     return (
       <div className="app-container forest-bg">
+        <header className="exp-bar-anchor">
+          <ExpBar player={player} />
+        </header>
+
+        <AchievementToast achievement={activeAchievement} />
+
         {phase === "burning" && (
           <div className="site-bg-layer" aria-hidden>
             <FireCanvas className="site-bg-video" opacity={1} />
@@ -89,6 +136,12 @@ export default function App() {
 
   return (
     <div className="app-container forest-bg">
+      <header className="exp-bar-anchor">
+        <ExpBar player={player} />
+      </header>
+
+      <AchievementToast achievement={activeAchievement} />
+
       <div className="site-bg-layer" aria-hidden>
         <FireCanvas className="site-bg-video" opacity={1} />
       </div>

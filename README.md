@@ -1,139 +1,85 @@
-﻿# Next_Gen_AI'sPractice_enaharu
+# Let It Burn
 
-仕事終わりの気持ち切り替えをテーマにした、React + Vite 製のフロントエンドアプリです。ローカル開発と GitHub Pages 配備の両方を前提に、最小限の構成で運用できるように整理しています。
+モヤモヤした気持ちを紙に書き、炎にくべることで気持ちを切り替えるためのWebアプリです。
 
-## 現在の状態
+入力した言葉が燃えて灰になるまでをアニメーションで表現し、利用を重ねるとEXPや実績が増えていきます。
 
-- React + Vite + TypeScript 構成
-- 入力・燃焼・完了の 3 フェーズ UI
-- CI はビルドと lint を実行
-- CD は GitHub Pages へ自動配備
-- 作業報告テンプレートは [docs/one-day-report.md](docs/one-day-report.md)
-- デモサイト: https://enaharu.github.io/Let-It-Burn/
+## デモ
 
-## ローカル環境構築
+[Let It Burnを試す](https://enaharu.github.io/Let-It-Burn/)
 
-前提:
+## 主な機能
 
-- Node.js 20 以上
-- npm 10 以上
+- 200文字までの気持ちや考えを書き出せる入力フォーム
+- 紙が落下し、焦げ、燃え尽きるまでのアニメーション
+- 利用回数に応じて成長するレベル・EXPシステム
+- 条件を満たすと解除される実績と通知
+- PCとスマートフォンに対応したレスポンシブ表示
+- 進行状況のブラウザ保存
 
-セットアップ:
+## 使い方
+
+1. 今の気持ちや手放したいことを入力します。
+2. ボタンを押して、書いた紙を炎にくべます。
+3. 紙が燃え尽きるまで眺めたら、次の気持ちを書き出せます。
+
+## ローカルで動かす
+
+### 必要な環境
+
+- Node.js 20以上
+- npm
+
+### セットアップ
 
 ```bash
-npm install
-```
-
-開発サーバー起動:
-
-```bash
+git clone https://github.com/enaharu/Let-It-Burn.git
+cd Let-It-Burn
+npm ci
 npm run dev
 ```
 
-ブラウザ確認先:
+開発サーバーの起動後、ターミナルに表示されたURLをブラウザで開いてください。通常は `http://localhost:5173/` です。
 
-- http://localhost:5173/
+## npmスクリプト
 
-品質確認:
+| コマンド | 内容 |
+| --- | --- |
+| `npm run dev` | 開発サーバーを起動 |
+| `npm run build` | TypeScriptの型チェックと本番ビルドを実行 |
+| `npm run lint` | ESLintによる静的解析を実行 |
+| `npm run preview` | 本番ビルドをローカルで確認 |
 
-```bash
-npm run lint
-npm run build
-```
+## 使用技術
 
-本番ビルドのローカル確認:
-
-```bash
-npm run preview
-```
-
-## インストールされる主要構成
-
-- React 19
-- Vite 7
-- TypeScript 5
-- ESLint 9
-- GitHub Actions による CI/CD
-
-補足:
-
-- GitHub Pages 配備時は [.github/workflows/cd.yml](.github/workflows/cd.yml) がリポジトリ名に応じてベースパスを解決します
-
-## GitHub リポジトリ作成と紐付けコマンド
-
-ローカル完結でテンプレート化する場合は、この節の実行は不要です。後から GitHub に公開する場合だけ使ってください。
-
-### GitHub CLI を使う場合
-
-```bash
-git init
-git branch -M main
-gh repo create next-gen-ais-practice-name --public --source . --remote origin --push
-```
-
-既存 remote を差し替える場合:
-
-```bash
-git remote remove origin
-gh repo create next-gen-ais-practice-name --public --source . --remote origin --push
-```
-
-### GitHub CLI を使わない場合
-
-GitHub 上で空リポジトリを作成後、以下を実行します。
-
-```bash
-git init
-git branch -M main
-git remote add origin https://github.com/<your-account>/next-gen-ais-practice-name.git
-git add .
-git commit -m "chore: initialize Next_Gen_AI'sPractice<name> template"
-git push -u origin main
-```
-
-## CI/CD
-
-CI:
-
-- [ .github/workflows/ci.yml ](.github/workflows/ci.yml)
-- push と pull_request を契機に npm ci, npm run lint, npm run build を実行
-
-CD:
-
-- [ .github/workflows/cd.yml ](.github/workflows/cd.yml)
-- main への push で GitHub Pages へ配備
-
-GitHub Pages の制作物 URL:
-
-- https://enaharu.github.io/Let-It-Burn/
-
-## 提出物
-
-- リポジトリ URL
-- 1 人日をどう使ったかの報告 md
-
-報告用テンプレート:
-
-- [docs/one-day-report.md](docs/one-day-report.md)
+- React
+- TypeScript
+- Vite
+- Framer Motion
+- HTML Canvas
+- GitHub Actions / GitHub Pages
 
 ## ディレクトリ構成
 
 ```text
 .
-├─ .github/
-│  ├─ ISSUE_TEMPLATE/
-│  └─ workflows/
-├─ docs/
-├─ public/
+├─ .github/workflows/   # CI/CD
+├─ public/              # 動画・アイコンなどの静的ファイル
 └─ src/
+   ├─ components/       # 画面を構成するUIコンポーネント
+   ├─ hooks/            # EXP・実績などの状態管理
+   ├─ types/            # TypeScriptの型定義
+   ├─ App.tsx           # 画面遷移と全体構成
+   └─ main.tsx          # エントリーポイント
 ```
 
-## 準備完了の判定
+## データの扱い
 
-以下を満たせば準備完了です。
+入力した文章はサーバーへ送信せず、ブラウザ上でのみ扱います。文章そのものは保存されません。
 
-1. `npm run dev` で React の初期画面が表示される
-2. `npm run build` が成功する
-3. GitHub に接続する場合は Actions が成功する
-4. README から公開 URL に遷移できる
+レベル、EXP、燃焼回数、解除済みの実績は、ブラウザの `localStorage` に保存されます。別のブラウザや端末には引き継がれません。
 
+## CI/CD
+
+- `main` ブランチへのpushとPull Requestで、lintとビルドを自動実行します。
+- `main` ブランチへのpush後、GitHub Pagesへ自動デプロイします。
